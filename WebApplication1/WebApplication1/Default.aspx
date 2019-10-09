@@ -15,6 +15,7 @@
 
                 <div class="wrapper_result" >
                      <div class="wrapper_result--prev">
+                       <asp:Label ID="storeRes" runat="server" CssClass="text_prev--hide" Text=""></asp:Label>
                        <asp:Label ID="prevRes" runat="server" CssClass="text_prev" Text=""></asp:Label>
                      </div>
                     <div class="wrapper_result--curr">

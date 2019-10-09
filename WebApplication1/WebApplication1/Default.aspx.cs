@@ -41,6 +41,14 @@ namespace WebApplication1
         protected void btn_num(object sender, EventArgs e)
         {
             Button btn = (Button)sender;
+            if(prevRes.Text != "0" && storeRes.Text.Length > 0)
+            {
+                prevRes.Text = "Ans : " + storeRes.Text;
+                result.Text = "0";
+                storeRes.Text = "";
+            }
+
+
             if(result.Text == "0")
             {
                 result.Text = btn.Text;
@@ -187,7 +195,12 @@ namespace WebApplication1
         protected void btn_oper(object sender, EventArgs e)
         {
             Button btnOper = (Button)sender;
-          
+            if (prevRes.Text != "0" && storeRes.Text.Length > 0)
+            {
+                prevRes.Text = "Ans : " + storeRes.Text;
+                storeRes.Text = "";
+            }
+
             if (checkPrevIsOperator(result.Text) || !RegexCheckOperator.IsMatch(btnOper.Text) || getLast(result.Text) == "(")
             {
                 return;
@@ -210,8 +223,12 @@ namespace WebApplication1
         {
             Button btn_parantheses1 = (Button)sender;
 
-
-            if(getLast(result.Text) == "(")
+            if (prevRes.Text != "0" && storeRes.Text.Length > 0)
+            {
+                prevRes.Text = "Ans : " + storeRes.Text;
+                storeRes.Text = "";
+            }
+            if (getLast(result.Text) == "(")
             {
                 return;
             }
@@ -235,14 +252,15 @@ namespace WebApplication1
         protected void btnParenthesesClose(object sender, EventArgs e)
         {
             Button btn_parantheses2 = (Button)sender;
-            if (checkPrevIsOperator(result.Text) || getLast(result.Text) == "(")
+            if (checkPrevIsOperator(result.Text) || getLast(result.Text) == "(" || parentheses.Text.Length == 0)
             {
                 return;
             }
+            
             else if(parentheses.Text.Length > 0)
             {
                 result.Text += btn_parantheses2.Text;
-                parentheses.Text = parentheses.Text.Substring(0, 0);
+                parentheses.Text = parentheses.Text.Remove(0,1);
             }
          
         }
@@ -250,8 +268,12 @@ namespace WebApplication1
         {
             try
             {
+                if(parentheses.Text.Length > 0 || checkPrevIsOperator(result.Text))
+                {
+                    return;
+                }
                 Regex RegexSplit = new Regex(@"([-+*/()])");
-                string[] strArray = RegexSplit.Split("23+3*5+(52+2*(4/2+0))").Where(x => x.Length > 0).ToArray();
+                string[] strArray = RegexSplit.Split(result.Text).Where(x => x.Length > 0).ToArray();
                 if(strArray.Length < 1)
                 {
                      result.Text = "0";
@@ -259,7 +281,10 @@ namespace WebApplication1
                 else
                 {
                     List<string> stringList = convertPosition(strArray);
+                    prevRes.Text = result.Text;
+                  
                     result.Text = count(stringList).ToString();
+                    storeRes.Text = result.Text;
                 }
                
             }
@@ -275,13 +300,19 @@ namespace WebApplication1
         protected void btn_c(object sender, EventArgs e)
         {
             result.Text = "0";
-            prevRes.Text = "";
+            prevRes.Text = "0";
+            storeRes.Text = "";
         }
         protected void btn_ce(object sender, EventArgs e)
         {
             if(result.Text.Length > 1)
             {
                 result.Text = removeLast(result.Text);
+            }
+            else if(getLast(result.Text) == "(")
+            {
+                result.Text = removeLast(result.Text);
+                parentheses.Text = parentheses.Text.Substring(0, 0);
             }
          
             
