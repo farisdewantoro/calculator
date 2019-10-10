@@ -12,7 +12,7 @@ namespace WebApplication1
     {
          public delegate bool Checker(string s);
          public delegate string StrFunc(string s);
-         public static Regex RegexCheckOperator = new Regex(@"[xX*]|[:/]|\-|\+");
+         public static Regex RegexCheckOperator = new Regex(@"^([xX*]|[:/]|\-|\+)$");
         public static Regex RegexFullOper = new Regex(@"[xX*]|[:/]|\-|\+|\((.*)\)|\(|\)");
          public static Regex RegexCheckParentheses = new Regex(@"\((.*)\)");
          
@@ -23,8 +23,46 @@ namespace WebApplication1
       
         protected void Page_Load(object sender, EventArgs e)
         {
-     
+           
+            //string s ="323+5-4124*(23-3)";
+            //Regex RegexSplit = new Regex(@"([-+*/()])");
+            //List<string> strArray = RegexSplit.Split(s).Where(x => x.Length > 0).ToList();
+
+
+            ////List<string> stringList = convertPosition(strArray);
+            //foreach(var i in minConvert(strArray))
+            //{
+            //    Debug.WriteLine(i);
+            //}
+    
         }
+
+        public static List<string> minConvert(List<string> s)
+        {
+            int i = 0;
+            while(i < s.Count)
+            {
+                if (s[i] == "-")
+                {
+                    if(i == 0 || s[i-1] == "(" || RegexCheckOperator.IsMatch(s[i-1]))
+                    {
+                      s[i] =  String.Concat(s[i], s[i + 1]);
+                        s.RemoveAt(i + 1);
+                        i++;
+                    }
+                    else
+                    {
+                        i++;
+                    }
+                }
+                else
+                {
+                    i++;
+                }
+            }
+            return s;
+        }
+
 
         public static bool checkIsFirstIsZero(string s)
         {
@@ -38,6 +76,7 @@ namespace WebApplication1
 
             return regexZero.IsMatch(stringSplit[stringSplit.Length-1]);
         }
+     
         protected void btn_num(object sender, EventArgs e)
         {
             Button btn = (Button)sender;
@@ -140,13 +179,20 @@ namespace WebApplication1
             {
                 return postStack;
             }
-
+            //52+3-(5*4/3)/3
+            //Poststack : 52, 3,+,5,4,/,3,*,/,-
+            //operStack : 
             foreach (var elem in arr)
             {
-                if (RegexCheckOperator.IsMatch(elem.ToString()))
+                    Debug.WriteLine(RegexCheckOperator.IsMatch(elem.ToString()));
+                    Debug.WriteLine(elem.ToString());
+                    if (RegexCheckOperator.IsMatch(elem.ToString()))
                 {
                    
-                    while (operStack.Any() && RegexCheckOperator.IsMatch(operStack.Last().ToString()) && sortOper[operStack.Last()] >= sortOper[elem])
+                    while (operStack.Any() 
+                            && 
+                            RegexCheckOperator.IsMatch(operStack.Last().ToString()) 
+                            && sortOper[operStack.Last()] >= sortOper[elem])
                     {
                         var lastItem = operStack.Last();
 
@@ -264,6 +310,7 @@ namespace WebApplication1
             }
          
         }
+
         protected void btn_enter(object sender, EventArgs e)
         {
             try
@@ -274,12 +321,16 @@ namespace WebApplication1
                 }
                 Regex RegexSplit = new Regex(@"([-+*/()])");
                 string[] strArray = RegexSplit.Split(result.Text).Where(x => x.Length > 0).ToArray();
-                if(strArray.Length < 1)
+                strArray = minConvert(strArray.ToList()).ToArray();
+           
+               
+                if (strArray.Length < 1)
                 {
                      result.Text = "0";
                 }
                 else
                 {
+
                     List<string> stringList = convertPosition(strArray);
                     prevRes.Text = result.Text;
                   
